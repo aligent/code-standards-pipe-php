@@ -22,5 +22,4 @@ script:
 
 ## Development
 
-This repository contains a branch for each supported PHP version.
-Commits published to these branches will trigger an automated build for the accompanying PHP version.
+Commits published to the `main` branch  will trigger an automated build for the each of the configured PHP version.
