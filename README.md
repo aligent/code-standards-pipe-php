@@ -7,11 +7,12 @@ This pipe is used to perform PHP code standards checks.
 Add the following snippet to the script section of your `bitbucket-pipelines.yml` file:
 
 ```yaml
-script:
-  - pipe: aligent/code-standards-pipe-php:<PHP VERSION>
-    variables:
-      # STANDARDS: "Magento2" # Optional
-      # DEBUG: "<boolean>" # Optional
+      - step:
+          name: "Code Standards check"
+          script:
+            - pipe: aligent/code-standards-pipe-php:7.4
+              variables:
+                STANDARDS: "Magento2"
 ```
 ## Variables
 
