@@ -8,6 +8,12 @@ source "$(dirname "$0")/common.sh"
 DEBUG=${DEBUG:=false}
 STANDARDS=${STANDARDS:="Security"}
 
+echo "Building auth.json"
+jq '."http-basic"."repo.magento.com".username = env.MAGENTO_USER | ."http-basic"."repo.magento.com".password = env.MAGENTO_PASS | del(."github-oauth")' auth.json.sample > auth.json
+
+echo "Installing dependencies"
+composer install --dev
+
 echo "Testing modified files in this branch..."
 
 TARGET_BRANCH='origin/master'
