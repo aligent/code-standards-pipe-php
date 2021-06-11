@@ -1,0 +1,10 @@
+name: Aligent Magento Code Standards Pipe
+image: aligent/m2-base-image:7.3
+description: This pipe is used to perform code standards checks on Magento applciations
+repository: git@bitbucket.org:aligent/aligent-magento-cs-pipe.git 
+maintainer: john.smith@aligent.com.au
+tags:
+    - bitbucket-pipelines
+    - pipes
+    - bash
+  
