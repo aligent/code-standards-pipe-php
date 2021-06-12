@@ -14,15 +14,22 @@ KNOWN_SERVERS_FILE="${INJECTED_SSH_CONFIG_DIR}/known_hosts"
 if [ ! -f ${IDENTITY_FILE} ]; then
      fail "No default SSH key configured in Pipelines"
 fi
-
 mkdir -p ~/.ssh
 touch ~/.ssh/authorized_keys
 cp ${IDENTITY_FILE} ~/.ssh/pipelines_id
 
+if [ ! -f ${KNOWN_SERVERS_FILE} ]; then
+     fail "No SSH known_hosts configured in Pipelines."
+fi
+cat ${KNOWN_SERVERS_FILE} >> ~/.ssh/known_hosts
+if [ -f ~/.ssh/config ]; then
+     debug "Appending to existing ~/.ssh/config file"
+fi
+echo "IdentityFile ~/.ssh/pipelines_id" >> ~/.ssh/config
+chmod -R go-rwx ~/.ssh/
+
 if [[ -z "${MAGENTO_USER}" ]] | [[ -z "${MAGENTO_PASS}" ]]; then
-     if $DEBUG; then
-          echo "No Magento Composer details configured. Skiping."
-     fi
+     debug "No Magento Composer details configured. Skiping."
 else
      echo "Injecting Magento Composer credentials into auth.json"
      jq '."http-basic"."repo.magento.com".username = env.MAGENTO_USER | ."http-basic"."repo.magento.com".password = env.MAGENTO_PASS | del(."github-oauth")' auth.json.sample > auth.json
@@ -32,9 +39,7 @@ fi
 echo "Installing composer dependencies"
 composer install --dev
 
-if $DEBUG; then
-     echo "Testing modified files in this branch..."
-fi
+debug "Testing modified files in this branch..."
 
 TARGET_BRANCH='origin/master'
 if [ -n "$BITBUCKET_PR_DESTINATION_BRANCH" ]; then
@@ -55,13 +60,11 @@ CHANGED_FILES=$(git diff --relative --name-only --diff-filter=AM $MERGE_BASE -- 
 if [ -z "$CHANGED_FILES" ]; then
   echo "No changed files to scan"
 else
-  if $DEBUG; then
-    echo "Changed files: "
-    echo $CHANGED_FILES
-  fi
-  mkdir -p test-results
-  ./vendor/bin/phpcs --report=junit \
-     --standard=${STANDARDS},Security $CHANGED_FILES > test-results/phpcs.xml || ./vendor/bin/phpcs --standard=${STANDARDS},Security $CHANGED_FILES && echo "No violations found"
+     debug "Changed files: "
+     debug $CHANGED_FILES
+     mkdir -p test-results
+     ./vendor/bin/phpcs --report=junit \
+          --standard=${STANDARDS},Security $CHANGED_FILES > test-results/phpcs.xml || ./vendor/bin/phpcs --standard=${STANDARDS},Security $CHANGED_FILES && echo "No violations found"
 fi
 
 if [[ "$?" == "0" ]]; then
