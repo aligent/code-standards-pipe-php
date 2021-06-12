@@ -7,6 +7,18 @@ source "$(dirname "$0")/common.sh"
 DEBUG=${DEBUG:=false}
 STANDARDS=${STANDARDS:="Security"}
 
+# Setup pipeline SSH 
+INJECTED_SSH_CONFIG_DIR="/opt/atlassian/pipelines/agent/ssh"
+IDENTITY_FILE="${INJECTED_SSH_CONFIG_DIR}/id_rsa_tmp"
+KNOWN_SERVERS_FILE="${INJECTED_SSH_CONFIG_DIR}/known_hosts"
+if [ ! -f ${IDENTITY_FILE} ]; then
+     fail "No default SSH key configured in Pipelines"
+fi
+
+mkdir -p ~/.ssh
+touch ~/.ssh/authorized_keys
+cp ${IDENTITY_FILE} ~/.ssh/pipelines_id
+
 if [[ -z "${MAGENTO_USER}" ]] | [[ -z "${MAGENTO_PASS}" ]]; then
      if $DEBUG; then
           echo "No Magento Composer details configured. Skiping."
