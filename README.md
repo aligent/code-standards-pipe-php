@@ -4,7 +4,7 @@ This pipe is used to perform PHP code standards checks.
 
 ## YAML Definition
 
-Add the following snippet to the script section of your `bitbucket-pipelines.yml` file:
+Add the following your `bitbucket-pipelines.yml` file:
 
 ```yaml
       - step:
@@ -13,6 +13,8 @@ Add the following snippet to the script section of your `bitbucket-pipelines.yml
             - pipe: aligent/code-standards-pipe-php:7.4
               variables:
                 STANDARDS: "Magento2"
+                MAGENTO_USER: "USER"
+                MAGENTO_PASS: "PASS"
 ```
 ## Variables
 
@@ -20,6 +22,8 @@ Add the following snippet to the script section of your `bitbucket-pipelines.yml
 | --------------------- | ----------------------------------------------------------- |
 | STANDARDS             | The PHPCS standards to run (Security checks will always be run |
 | DEBUG                 | Turn on extra debug information. Default: `false`. |
+| MAGENTO_USER          | Injects repo.magento.com user into auth.json |
+| MAGENTO_PASS          | Injects repo.magento.com password into auth.json|
 
 ## Development
 
