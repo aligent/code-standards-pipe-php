@@ -35,7 +35,7 @@ setup_ssh_creds() {
 
 inject_composer_creds() {
      if [[ -z "${MAGENTO_USER}" ]] | [[ -z "${MAGENTO_PASS}" ]]; then
-          debug "No Magento Composer details configured. Skiping."
+          info "No Magento Composer details configured. Skiping."
      else
           echo "Injecting Magento Composer credentials into auth.json"
           jq '."http-basic"."repo.magento.com".username = env.MAGENTO_USER | ."http-basic"."repo.magento.com".password = env.MAGENTO_PASS | del(."github-oauth")' auth.json.sample > auth.json
