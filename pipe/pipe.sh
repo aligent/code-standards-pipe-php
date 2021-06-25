@@ -15,7 +15,7 @@ setup_ssh_creds() {
      IDENTITY_FILE="${INJECTED_SSH_CONFIG_DIR}/id_rsa_tmp"
      KNOWN_SERVERS_FILE="${INJECTED_SSH_CONFIG_DIR}/known_hosts"
      if [ ! -f ${IDENTITY_FILE} ]; then
-          debug "No default SSH key configured in Pipelines.\n These are required to install internal composer packages. \n These should be generated in bitbucket settings at Pipelines > SSH Keys."
+          info "No default SSH key configured in Pipelines.\n These are required to install internal composer packages. \n These should be generated in bitbucket settings at Pipelines > SSH Keys."
           return
      fi
      mkdir -p ~/.ssh
