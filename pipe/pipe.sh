@@ -39,6 +39,10 @@ inject_composer_creds() {
      else
           echo "Injecting Magento Composer credentials into auth.json"
           jq '."http-basic"."repo.magento.com".username = env.MAGENTO_USER | ."http-basic"."repo.magento.com".password = env.MAGENTO_PASS | del(."github-oauth")' auth.json.sample > auth.json
+          if $DEBUG; then
+               echo "auth.json"
+               cat auth.json
+          fi
      fi
 }
 
