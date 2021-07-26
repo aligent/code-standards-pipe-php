@@ -21,7 +21,7 @@ Add the following your `bitbucket-pipelines.yml` file:
 
 | Variable              | Usage                                                       |
 | --------------------- | ----------------------------------------------------------- |
-| STANDARDS             | The PHPCS standards to run (Security checks will always be run |
+| STANDARDS             | The PHPCS standards to run (Security checks will always be run) |
 | DEBUG                 | (Optional) Turn on extra debug information. Default: `false`. |
 | INSTALL_DEPENDENCIES  | (Optional) Turn on install project composer dependencies. Default: `true`. |
 | MAGENTO_USER          | (Optional) Injects repo.magento.com user into auth.json |
@@ -30,3 +30,4 @@ Add the following your `bitbucket-pipelines.yml` file:
 ## Development
 
 Commits published to the `main` branch  will trigger an automated build for the each of the configured PHP version.
+Commits to `staging` will do the same but image tags will be suffixed with `-experimiental`.
