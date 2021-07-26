@@ -23,7 +23,7 @@ Add the following your `bitbucket-pipelines.yml` file:
 | --------------------- | ----------------------------------------------------------- |
 | STANDARDS             | The PHPCS standards to run (Security checks will always be run) |
 | DEBUG                 | (Optional) Turn on extra debug information. Default: `false`. |
-| INSTALL_DEPENDENCIES  | (Optional) Turn on install project composer dependencies. Default: `true`. |
+| INSTALL_DEPENDENCIES  | (Optional) Install project composer dependencies. Default: `true`. |
 | MAGENTO_USER          | (Optional) Injects repo.magento.com user into auth.json |
 | MAGENTO_PASS          | (Optional) Injects repo.magento.com password into auth.json|
 
