@@ -79,7 +79,7 @@ run_standards_checks() {
           debug $CHANGED_FILES
           mkdir -p test-results
 
-          ./vendor/bin/phpcs --report=junit \
+          /composer/vendor/bin/phpcs --report=junit \
                --standard=${STANDARDS},Security $CHANGED_FILES > test-results/phpcs.xml || ./vendor/bin/phpcs --standard=${STANDARDS},Security $CHANGED_FILES && echo "No violations found"
      fi
 
