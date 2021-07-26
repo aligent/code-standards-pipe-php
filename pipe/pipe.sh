@@ -80,7 +80,7 @@ run_standards_checks() {
           mkdir -p test-results
 
           /composer/vendor/bin/phpcs --report=junit \
-               --standard=${STANDARDS},Security $CHANGED_FILES > test-results/phpcs.xml || ./vendor/bin/phpcs --standard=${STANDARDS},Security $CHANGED_FILES && echo "No violations found"
+               --standard=${STANDARDS},Security $CHANGED_FILES > test-results/phpcs.xml || /composer/vendor/bin/phpcs --standard=${STANDARDS},Security $CHANGED_FILES && echo "No violations found"
      fi
 
      if [[ "$?" == "0" ]]; then
