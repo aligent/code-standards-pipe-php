@@ -6,7 +6,7 @@ source "$(dirname "$0")/common.sh"
 
 validate() {
      DEBUG=${DEBUG:=false}
-     INSTALL_DEPS=${INSTALL_DEPS:=false}
+     SKIP_DEPENDENCIES=${SKIP_DEPENDENCIES:=false}
      STANDARDS=${STANDARDS:="Security"}
 }
 
@@ -91,7 +91,7 @@ run_standards_checks() {
 }
 
 validate
-if $INSTALL_DEPS; then
+if [ $SKIP_DEPENDENCIES = false ]; then
      setup_ssh_creds
      inject_composer_creds
      install_composer_dependencies

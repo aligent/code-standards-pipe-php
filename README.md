@@ -13,7 +13,7 @@ Add the following your `bitbucket-pipelines.yml` file:
             - pipe: aligent/code-standards-pipe-php:7.4
               variables:
                 STANDARDS: "Magento2"
-                INSTALL_DEPENDENCIES: "false"
+                SKIP_DEPENDENCIES: "true"
                 MAGENTO_USER: "USER"
                 MAGENTO_PASS: "PASS"
 ```
@@ -23,7 +23,7 @@ Add the following your `bitbucket-pipelines.yml` file:
 | --------------------- | ----------------------------------------------------------- |
 | STANDARDS             | The PHPCS standards to run (Security checks will always be run) |
 | DEBUG                 | (Optional) Turn on extra debug information. Default: `false`. |
-| INSTALL_DEPENDENCIES  | (Optional) Install project composer dependencies. Default: `false`. |
+| SKIP_DEPENDENCIES     | (Optional) Skip installing project composer dependencies. Default: `false`. |
 | MAGENTO_USER          | (Optional) Injects repo.magento.com user into auth.json |
 | MAGENTO_PASS          | (Optional) Injects repo.magento.com password into auth.json|
 
