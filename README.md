@@ -13,6 +13,7 @@ Add the following your `bitbucket-pipelines.yml` file:
             - pipe: aligent/code-standards-pipe-php:7.4
               variables:
                 STANDARDS: "Magento2"
+                SKIP_DEPENDENCIES: "true"
                 MAGENTO_USER: "USER"
                 MAGENTO_PASS: "PASS"
 ```
@@ -20,11 +21,13 @@ Add the following your `bitbucket-pipelines.yml` file:
 
 | Variable              | Usage                                                       |
 | --------------------- | ----------------------------------------------------------- |
-| STANDARDS             | The PHPCS standards to run (Security checks will always be run |
+| STANDARDS             | The PHPCS standards to run (Security checks will always be run) |
 | DEBUG                 | (Optional) Turn on extra debug information. Default: `false`. |
+| SKIP_DEPENDENCIES     | (Optional) Skip installing project composer dependencies. Default: `false`. |
 | MAGENTO_USER          | (Optional) Injects repo.magento.com user into auth.json |
 | MAGENTO_PASS          | (Optional) Injects repo.magento.com password into auth.json|
 
 ## Development
 
 Commits published to the `main` branch  will trigger an automated build for the each of the configured PHP version.
+Commits to `staging` will do the same but image tags will be suffixed with `-experimiental`.

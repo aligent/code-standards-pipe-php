@@ -7,4 +7,8 @@ RUN wget -P / https://bitbucket.org/bitbucketpipelines/bitbucket-pipes-toolkit-b
 
 RUN chmod a+x /*.sh
 
+RUN mkdir /composer
+COPY composer.json /composer
+RUN cd /composer && composer install
+
 ENTRYPOINT ["/pipe.sh"]
