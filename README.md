@@ -1,5 +1,6 @@
 # Aligent Magento Code Standards Pipe
 
+
 This pipe is used to perform PHP code standards checks.
 
 ## YAML Definition
@@ -26,8 +27,14 @@ Add the following your `bitbucket-pipelines.yml` file:
 | SKIP_DEPENDENCIES     | (Optional) Skip installing project composer dependencies. Default: `false`. |
 | MAGENTO_USER          | (Optional) Injects repo.magento.com user into auth.json |
 | MAGENTO_PASS          | (Optional) Injects repo.magento.com password into auth.json|
+| EXCLUDE_EXPRESSION    | (Optional) A grep [regular expression](https://www.gnu.org/software/grep/manual/html_node/Basic-vs-Extended.html) to exclude files from standards testing|
 
 ## Development
+
+The following command can be used to invoke the pipe locally:
+```
+docker run -v $PWD:/build --workdir=/build aligent/code-standards-pipe-php:<PHP_VERSION>
+```
 
 Commits published to the `main` branch  will trigger an automated build for the each of the configured PHP version.
 Commits to `staging` will do the same but image tags will be suffixed with `-experimiental`.

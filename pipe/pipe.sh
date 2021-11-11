@@ -69,8 +69,15 @@ run_standards_checks() {
      echo "Comparing HEAD against branch $TARGET_BRANCH"
      MERGE_BASE=$(git merge-base HEAD $TARGET_BRANCH)
 
-     echo "Comparing HEAD against merge base $MERGE_BASE"
      CHANGED_FILES=$(git diff --relative --name-only --diff-filter=AM $MERGE_BASE -- '*.php' '*.phtml')
+
+     echo "Comparing HEAD against merge base $MERGE_BASE"
+     if [ ! -z "$EXCLUDE_EXPRESSION" ]; then
+          EXCLUDED_FILES=$(echo $CHANGED_FILES | tr " " "\n" | grep -E $EXCLUDE_EXPRESSION) || true
+          CHANGED_FILES=$(echo $CHANGED_FILES | tr " " "\n" | grep -vE $EXCLUDE_EXPRESSION) || true
+          echo "Excluding files:"
+          echo $EXCLUDED_FILES
+     fi
 
      if [ -z "$CHANGED_FILES" ]; then
           echo "No changed files to scan"
