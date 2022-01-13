@@ -11,7 +11,7 @@ Add the following your `bitbucket-pipelines.yml` file:
       - step:
           name: "Code Standards check"
           script:
-            - pipe: aligent/code-standards-pipe-php:7.4
+            - pipe: docker://aligent/code-standards-pipe-php:7.4
               variables:
                 STANDARDS: "Magento2"
                 SKIP_DEPENDENCIES: "true"
