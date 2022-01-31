@@ -149,9 +149,6 @@ class PHPCodeStandards(Pipe):
         # Parses a Junit file and returns all errors
         def read_failures_from_file(file):
             from junitparser import JUnitXml
-            with open(file) as report:
-                for line in report:
-                    self.log_info(line)
 
             results = []
             xml = JUnitXml.fromfile(file)
