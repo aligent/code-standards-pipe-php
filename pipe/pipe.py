@@ -226,7 +226,7 @@ class PHPCodeStandards(Pipe):
                 "MEDIUM",
                 failure["path"],
                 failure["line"],
-                "php-code-standards-pipe",
+                "code-standards-pipe-php",
                 report_id,
                 "CODE_SMELL",
                 str(uuid.uuid4),
