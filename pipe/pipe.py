@@ -8,6 +8,7 @@ import subprocess
 from sys import stdout
 import sys
 import uuid
+import re
 from bitbucket import Bitbucket
 from bitbucket_pipes_toolkit import Pipe, get_logger
 
@@ -30,8 +31,14 @@ class PHPCodeStandards(Pipe):
         self.magento_password = self.get_variable('MAGENTO_PASSWORD')
         self.skip_dependencies = self.get_variable(
             'SKIP_DEPENDENCIES') if self.get_variable('SKIP_DEPENDENCIES') else False
-        self.standards = f"Security,{self.get_variable('STANDARDS')}" if self.get_variable('STANDARDS') else 'Security'
+        self.standards = f"Security,{self.get_variable('STANDARDS')}" if self.get_variable(
+            'STANDARDS') else 'Security'
         self.exclude_expression = self.get_variable('EXCLUDE_EXPRESSION')
+        self.bitbucket_workspace  = os.getenv('BITBUCKET_WORKSPACE')
+        self.bitbucket_repo_slug = os.getenv('BITBUCKET_REPO_SLUG')
+        self.bitbucket_pipeline_uuid = os.getenv('BITBUCKET_PIPELINE_UUID')
+        self.bitbucket_step_uuid = os.getenv('BITBUCKET_STEP_UUID')
+        self.bitbucket_commit = os.getenv('BITBUCKET_COMMIT')
 
     def setup_ssh_credentials(self):
         injected_ssh_config_dir = "/opt/atlassian/pipelines/agent/ssh"
@@ -101,7 +108,6 @@ class PHPCodeStandards(Pipe):
 
         self.log_info(f"Comparing HEAD against merge base {merge_base}")
         if self.exclude_expression:
-            import re
             def filter_paths(path):
                 match = re.search(self.exclude_expression, path)
                 if match:
@@ -138,12 +144,87 @@ class PHPCodeStandards(Pipe):
         composer_install= subprocess.run(composer_install_command)
         composer_install.check_returncode()
 
+    def upload_report(self):
+
+        # Parses a Junit file and returns all errors
+        def read_failures_from_file(file):
+            from junitparser import JUnitXml
+
+            results = []
+            xml = JUnitXml.fromfile(file)
+            if not xml.failures: return []
+            for suite in xml:
+                # handle suites
+                if suite.failures == 0: continue
+                for case in suite:
+                    for result in case.result:
+                        results.append({
+                            "path": suite.name,
+                            "title": case.name,
+                            "summary": result.message,
+                            "line": re.search("\((\d*):.*\)", case.name).group(1) 
+                            })
+
+            return results
+
+        # Builds a report given a number of failures
+        def build_report_data(failure_count):
+            report_data = [
+                    {
+                        "title": 'Failures',
+                        "type": 'NUMBER',
+                        "value": failure_count
+                        }
+                    ]
+
+            return report_data
+
+        report_id = str(uuid.uuid4())
+
+        bitbucket_api = Bitbucket(proxies={"http": 'http://host.docker.internal:29418'})
+
+        failures = read_failures_from_file(
+                f"test-results/phpcs.xml"
+                )
+        
+        bitbucket_api.create_report(
+                "Code standards report",
+                "Results producced by runing PHPCS against updated files" ,
+                "SECURITY" ,
+                report_id,
+                "php-code-standards-pipe" ,
+                "FAILED" if len(failures) else "PASSED",
+                f"https://bitbucket.org/{self.bitbucket_workspace}/{self.bitbucket_repo_slug}/addon/pipelines/home#!/results/{self.bitbucket_pipeline_uuid}/steps/{self.bitbucket_step_uuid}/test-report",
+                build_report_data(len(failures)),
+                self.bitbucket_workspace,
+                self.bitbucket_repo_slug,
+                self.bitbucket_commit
+                )
+
+        for failure in failures:
+            bitbucket_api.create_annotation(
+                failure["title"],
+                failure["summary"],
+                "MEDIUM",
+                failure["path"],
+                failure["line"],
+                "php-code-standards-pipe",
+                report_id,
+                "CODE_SMELL",
+                str(uuid.uuid4),
+                self.bitbucket_workspace,
+                self.bitbucket_repo_slug,
+                self.bitbucket_commit
+                )
+        
+
     def run(self):
         super().run()
         self.setup_ssh_credentials()
         self.inject_composer_credentials()
         self.composer_install()
         self.run_code_standards_check()
+        self.upload_report()
 
         if self.standards_failure:
             self.fail(message=f"Failed code standards test")
