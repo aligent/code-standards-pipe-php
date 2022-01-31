@@ -104,7 +104,11 @@ class PHPCodeStandards(Pipe):
                                                 "*.phtml"
                                             ]).decode(sys.stdout.encoding).split('\n')
 
+        # Filter empty stirngs
         changed_files = list(filter(None, changed_files))
+        # Covert paths to relative equivalent
+        workspace_path = "/opt/atlassian/pipelines/agent/build/"
+        changed_files = list(map(lambda x: x.replace(workspace_path, ''), changed_files))
 
         self.log_info(f"Comparing HEAD against merge base {merge_base}")
         if self.exclude_expression:
@@ -115,6 +119,7 @@ class PHPCodeStandards(Pipe):
                 return False if match else True
 
             changed_files = list(filter(filter_paths, changed_files))
+
 
         if not changed_files:
             self.success("No changed files to scan")
