@@ -102,8 +102,9 @@ class PHPCodeStandards(Pipe):
                                                 "--",
                                                 "*.php",
                                                 "*.phtml"
-                                            ]).decode(sys.stdout.encoding)[:-1].split('\n')
+                                            ]).decode(sys.stdout.encoding).split('\n')
 
+        changed_files = list(filter(None, changed_files))
 
         self.log_info(f"Comparing HEAD against merge base {merge_base}")
         if self.exclude_expression:
