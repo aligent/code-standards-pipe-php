@@ -41,6 +41,7 @@ class PHPCodeStandards(Pipe):
         self.bitbucket_commit = os.getenv('BITBUCKET_COMMIT')
 
     def setup_ssh_credentials(self):
+        ssh_dir = os.path.expanduser("~/.ssh/")
         injected_ssh_config_dir = "/opt/atlassian/pipelines/agent/ssh"
         identity_file = f"{injected_ssh_config_dir}/id_rsa_tmp"
         known_servers_file = f"{injected_ssh_config_dir}/known_hosts"
@@ -51,17 +52,17 @@ class PHPCodeStandards(Pipe):
         if not os.path.exists(known_servers_file):
             self.fail(message="No SSH known_hosts configured in Pipelines.")
 
-        os.mkdir(os.path.expanduser("~/.ssh"))
+        os.mkdir(ssh_dir)
 
-        shutil.copy(identity_file, os.path.expanduser("~/.ssh/pipelines_id"))
+        shutil.copy(identity_file, f"{ssh_dir}pipelines_id")
 
         # Read contents of pipe-injected known hosts and pipe into ~/.ssh/known_hosts
         with open(known_servers_file) as pipe_known_host_file:
-            with open("~/.ssh/known_hosts", 'a') as known_host_file:
+            with open(f"{ssh_dir}known_hosts", 'a') as known_host_file:
                 for line in pipe_known_host_file:
                     known_host_file.write(line)
 
-        with open("~/.ssh/config", 'a') as config_file:
+        with open(f"{ssh_dir}config", 'a') as config_file:
             config_file.write("IdentityFile ~/.ssh/pipelines_id")
 
         subprocess.run(["chmod", "-R", "go-rwx", "~/.ssh/"])
