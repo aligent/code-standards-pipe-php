@@ -53,7 +53,7 @@ class PHPCodeStandards(Pipe):
 
         os.mkdir(os.path.expanduser("~/.ssh"))
 
-        shutil.copy(identity_file, "~/.ssh/pipelines_id")
+        shutil.copy(identity_file, os.path.expanduser("~/.ssh/pipelines_id"))
 
         # Read contents of pipe-injected known hosts and pipe into ~/.ssh/known_hosts
         with open(known_servers_file) as pipe_known_host_file:
@@ -64,8 +64,7 @@ class PHPCodeStandards(Pipe):
         with open("~/.ssh/config", 'a') as config_file:
             config_file.write("IdentityFile ~/.ssh/pipelines_id")
 
-        composer_auth_update = subprocess.run(
-            ["chmod", "-R", "go-rwx", "~/.ssh/"])
+        subprocess.run(["chmod", "-R", "go-rwx", "~/.ssh/"])
 
     def inject_composer_credentials(self):
         if not self.magento_user or not self.magento_password:
