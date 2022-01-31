@@ -219,9 +219,10 @@ class PHPCodeStandards(Pipe):
 
     def run(self):
         super().run()
-        self.setup_ssh_credentials()
-        self.inject_composer_credentials()
-        self.composer_install()
+        if not self.skip_dependencies:
+            self.setup_ssh_credentials()
+            self.inject_composer_credentials()
+            self.composer_install()
         self.run_code_standards_check()
         self.upload_report()
 
