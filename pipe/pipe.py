@@ -117,7 +117,9 @@ class PHPCodeStandards(Pipe):
             changed_files = list(filter(filter_paths, changed_files))
 
         if not changed_files:
-            self.success("No changed files to scan", do_exit=True)
+            self.success("No changed files to scan")
+            self.standards_failure = False
+            return
         
         if not os.path.exists("test-results"):
             os.mkdir("test-results")
@@ -182,6 +184,22 @@ class PHPCodeStandards(Pipe):
         report_id = str(uuid.uuid4())
 
         bitbucket_api = Bitbucket(proxies={"http": 'http://host.docker.internal:29418'})
+
+        if not os.path.exists("test-results/phpcs.xml"):
+            bitbucket_api.create_report(
+                    "Code standards report",
+                    "Results producced by runing PHPCS against updated files" ,
+                    "SECURITY" ,
+                    report_id,
+                    "code-standards-pipe-php",
+                    "PASSED",
+                    f"https://bitbucket.org/{self.bitbucket_workspace}/{self.bitbucket_repo_slug}/addon/pipelines/home#!/results/{self.bitbucket_pipeline_uuid}/steps/{self.bitbucket_step_uuid}/test-report",
+                    build_report_data(0),
+                    self.bitbucket_workspace,
+                    self.bitbucket_repo_slug,
+                    self.bitbucket_commit
+                    )
+
 
         failures = read_failures_from_file(
                 f"test-results/phpcs.xml"
