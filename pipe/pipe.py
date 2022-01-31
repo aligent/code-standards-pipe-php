@@ -192,7 +192,7 @@ class PHPCodeStandards(Pipe):
                 "Results producced by runing PHPCS against updated files" ,
                 "SECURITY" ,
                 report_id,
-                "php-code-standards-pipe" ,
+                "code-standards-pipe-php",
                 "FAILED" if len(failures) else "PASSED",
                 f"https://bitbucket.org/{self.bitbucket_workspace}/{self.bitbucket_repo_slug}/addon/pipelines/home#!/results/{self.bitbucket_pipeline_uuid}/steps/{self.bitbucket_step_uuid}/test-report",
                 build_report_data(len(failures)),
