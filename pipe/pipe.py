@@ -135,13 +135,11 @@ class PHPCodeStandards(Pipe):
                                stderr=subprocess.PIPE, universal_newlines=True)
         self.standards_failure = False if phpcs.returncode == 0 else True
 
-        if self.standards_failure:
-            phpcs_output = phpcs.stdout
-        else:
-            phpcs_output = phpcs.stderr
+        phpcs_output = phpcs.stdout
 
-        with open("test-results/phpcs.xml", 'a') as output_file:
-            output_file.write(phpcs_output)
+        if phpcs_output:
+            with open("test-results/phpcs.xml", 'a') as output_file:
+                output_file.write(phpcs_output)
 
     def composer_install(self):
         composer_install_command = ["composer", "install", "--dev"]
