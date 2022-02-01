@@ -7,7 +7,6 @@ from sre_constants import SUCCESS
 import subprocess
 from sys import stdout
 import sys
-from tabnanny import check
 import uuid
 import re
 from bitbucket import Bitbucket
