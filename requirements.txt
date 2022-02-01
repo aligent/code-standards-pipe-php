@@ -1,3 +1,3 @@
 junitparser
-git+https://github.com/aligent/bitbucket-manager@feature/code-insight-reports
+git+https://github.com/aligent/bitbucket-manager
 bitbucket-pipes-toolkit==3.2.1
