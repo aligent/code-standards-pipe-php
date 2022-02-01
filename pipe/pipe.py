@@ -235,7 +235,7 @@ class PHPCodeStandards(Pipe):
                 "code-standards-pipe-php",
                 report_id,
                 "CODE_SMELL",
-                str(uuid.uuid4),
+                str(uuid.uuid4()),
                 self.bitbucket_workspace,
                 self.bitbucket_repo_slug,
                 self.bitbucket_commit
