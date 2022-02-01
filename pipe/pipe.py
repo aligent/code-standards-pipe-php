@@ -225,6 +225,7 @@ class PHPCodeStandards(Pipe):
                 )
 
         for failure in failures:
+            self.log_info(f"Submitting failure: {failure}")
             bitbucket_api.create_annotation(
                 failure["title"],
                 failure["summary"],
