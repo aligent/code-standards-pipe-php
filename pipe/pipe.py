@@ -7,6 +7,7 @@ from sre_constants import SUCCESS
 import subprocess
 from sys import stdout
 import sys
+from tabnanny import check
 import uuid
 import re
 from bitbucket import Bitbucket
@@ -15,12 +16,12 @@ from bitbucket_pipes_toolkit import Pipe, get_logger
 
 logger = get_logger()
 schema = {
-        'MAGENTO_USER': {'type': 'string', 'required': False},
-        'MAGENTO_PASS': {'type': 'string', 'required': False},
-        'SKIP_DEPENDENCIES': {'type': 'string', 'required': False},
-        'STANDARDS': {'type': 'string', 'required': False},
-        'EXCLUDE_EXPRESSION': {'type': 'string', 'required': False},
-        }
+    'MAGENTO_USER': {'type': 'string', 'required': False},
+    'MAGENTO_PASS': {'type': 'string', 'required': False},
+    'SKIP_DEPENDENCIES': {'type': 'string', 'required': False},
+    'STANDARDS': {'type': 'string', 'required': False},
+    'EXCLUDE_EXPRESSION': {'type': 'string', 'required': False},
+}
 
 
 class PHPCodeStandards(Pipe):
@@ -29,11 +30,12 @@ class PHPCodeStandards(Pipe):
         super().__init__(*args, **kwargs)
         self.magento_user = self.get_variable('MAGENTO_USER')
         self.magento_password = self.get_variable('MAGENTO_PASSWORD')
-        self.skip_dependencies = True if self.get_variable('SKIP_DEPENDENCIES') else False
+        self.skip_dependencies = True if self.get_variable(
+            'SKIP_DEPENDENCIES') else False
         self.standards = f"Security,{self.get_variable('STANDARDS')}" if self.get_variable(
             'STANDARDS') else 'Security'
         self.exclude_expression = self.get_variable('EXCLUDE_EXPRESSION')
-        self.bitbucket_workspace  = os.getenv('BITBUCKET_WORKSPACE')
+        self.bitbucket_workspace = os.getenv('BITBUCKET_WORKSPACE')
         self.bitbucket_repo_slug = os.getenv('BITBUCKET_REPO_SLUG')
         self.bitbucket_pipeline_uuid = os.getenv('BITBUCKET_PIPELINE_UUID')
         self.bitbucket_step_uuid = os.getenv('BITBUCKET_STEP_UUID')
@@ -52,10 +54,10 @@ class PHPCodeStandards(Pipe):
             self.fail(message="No SSH known_hosts configured in Pipelines.")
 
         os.mkdir(ssh_dir)
-
         shutil.copy(identity_file, f"{ssh_dir}pipelines_id")
 
-        # Read contents of pipe-injected known hosts and pipe into ~/.ssh/known_hosts
+        # Read contents of pipe-injected known hosts and pipe into 
+        # runtime ssh config
         with open(known_servers_file) as pipe_known_host_file:
             with open(f"{ssh_dir}known_hosts", 'a') as known_host_file:
                 for line in pipe_known_host_file:
@@ -64,7 +66,7 @@ class PHPCodeStandards(Pipe):
         with open(f"{ssh_dir}config", 'a') as config_file:
             config_file.write("IdentityFile ~/.ssh/pipelines_id")
 
-        subprocess.run(["chmod", "-R", "go-rwx", "~/.ssh/"])
+        subprocess.run(["chmod", "-R", "go-rwx", "~/.ssh/"], check=True)
 
     def inject_composer_credentials(self):
         if not self.magento_user or not self.magento_password:
@@ -95,16 +97,16 @@ class PHPCodeStandards(Pipe):
 
         changed_files = subprocess.check_output(["git",
                                                 "diff",
-                                                "--relative",
-                                                "--name-only",
-                                                "--diff-filter=AM",
-                                                merge_base,
-                                                "--",
-                                                "*.php",
-                                                "*.phtml"
-                                            ]).decode(sys.stdout.encoding).split('\n')
+                                                 "--relative",
+                                                 "--name-only",
+                                                 "--diff-filter=AM",
+                                                 merge_base,
+                                                 "--",
+                                                 "*.php",
+                                                 "*.phtml"
+                                                 ]).decode(sys.stdout.encoding).split('\n')
 
-        # Filter empty stirngs
+        # Filter empty strings
         changed_files = list(filter(None, changed_files))
 
         self.log_info(f"Comparing HEAD against merge base {merge_base}")
@@ -117,49 +119,49 @@ class PHPCodeStandards(Pipe):
 
             changed_files = list(filter(filter_paths, changed_files))
 
-
         if not changed_files:
             self.success("No changed files to scan")
             self.standards_failure = False
             return
-        
+
         if not os.path.exists("test-results"):
             os.mkdir("test-results")
-        
+
         phpcs_command = ["/composer/vendor/bin/phpcs",
-                        "--report=junit",
-                        f"--standard={self.standards}"
-                        ] + changed_files
-                        
-        phpcs = subprocess.run(phpcs_command,stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-        self.standards_failure = False if phpcs.returncode == 0 else True 
+                         "--report=junit",
+                         f"--standard={self.standards}"
+                         ] + changed_files
+
+        phpcs = subprocess.run(phpcs_command, stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE, universal_newlines=True)
+        self.standards_failure = False if phpcs.returncode == 0 else True
 
         if self.standards_failure:
             phpcs_output = phpcs.stdout
-        else: 
+        else:
             phpcs_output = phpcs.stderr
-
 
         with open("test-results/phpcs.xml", 'a') as output_file:
             output_file.write(phpcs_output)
 
     def composer_install(self):
-        composer_install_command= ["composer", "install", "--dev"]
-        composer_install= subprocess.run(composer_install_command)
+        composer_install_command = ["composer", "install", "--dev"]
+        composer_install = subprocess.run(composer_install_command)
         composer_install.check_returncode()
 
     def upload_report(self):
-
         # Parses a Junit file and returns all errors
         def read_failures_from_file(file):
             from junitparser import JUnitXml
 
             results = []
             xml = JUnitXml.fromfile(file)
-            if not xml.failures: return []
+            if not xml.failures:
+                return []
             for suite in xml:
                 # handle suites
-                if suite.failures == 0: continue
+                if suite.failures == 0:
+                    continue
                 for case in suite:
                     for result in case.result:
                         # Covert paths to relative equivalent
@@ -169,63 +171,50 @@ class PHPCodeStandards(Pipe):
                             "path": path,
                             "title": case.name,
                             "summary": result.message,
-                            "line": re.search("\((\d*):.*\)", case.name).group(1) 
-                            })
+                            # Extract line number from name
+                            # Example: /some/path/to/file (10:11)
+                            "line": re.search("\((\d*):.*\)", case.name).group(1)
+                        })
 
             return results
 
         # Builds a report given a number of failures
         def build_report_data(failure_count):
             report_data = [
-                    {
-                        "title": 'Failures',
-                        "type": 'NUMBER',
-                        "value": failure_count
-                        }
-                    ]
+                {
+                    "title": 'Failures',
+                    "type": 'NUMBER',
+                    "value": failure_count
+                }
+            ]
 
             return report_data
 
         report_id = str(uuid.uuid4())
 
-        bitbucket_api = Bitbucket(proxies={"http": 'http://host.docker.internal:29418'})
+        bitbucket_api = Bitbucket(
+            proxies={"http": 'http://host.docker.internal:29418'})
 
-        if not os.path.exists("test-results/phpcs.xml"):
-            bitbucket_api.create_report(
-                    "Code standards report",
-                    "Results producced by runing PHPCS against updated files" ,
-                    "SECURITY" ,
-                    report_id,
-                    "code-standards-pipe-php",
-                    "PASSED",
-                    f"https://bitbucket.org/{self.bitbucket_workspace}/{self.bitbucket_repo_slug}/addon/pipelines/home#!/results/{self.bitbucket_pipeline_uuid}/steps/{self.bitbucket_step_uuid}/test-report",
-                    build_report_data(0),
-                    self.bitbucket_workspace,
-                    self.bitbucket_repo_slug,
-                    self.bitbucket_commit
-                    )
+        failures = []
+        if os.path.exists("test-results/phpcs.xml"):
+            failures = read_failures_from_file(f"test-results/phpcs.xml")
 
-
-        failures = read_failures_from_file(
-                f"test-results/phpcs.xml"
-                )
-        
         bitbucket_api.create_report(
-                "Code standards report",
-                "Results producced by runing PHPCS against updated files" ,
-                "SECURITY" ,
-                report_id,
-                "code-standards-pipe-php",
-                "FAILED" if len(failures) else "PASSED",
-                f"https://bitbucket.org/{self.bitbucket_workspace}/{self.bitbucket_repo_slug}/addon/pipelines/home#!/results/{self.bitbucket_pipeline_uuid}/steps/{self.bitbucket_step_uuid}/test-report",
-                build_report_data(len(failures)),
-                self.bitbucket_workspace,
-                self.bitbucket_repo_slug,
-                self.bitbucket_commit
-                )
+            "Code standards report",
+            "Results producced by runing PHPCS against updated files",
+            "SECURITY",
+            report_id,
+            "code-standards-pipe-php",
+            "FAILED" if len(failures) else "PASSED",
+            f"https://bitbucket.org/{self.bitbucket_workspace}/{self.bitbucket_repo_slug}/addon/pipelines/home#!/results/{self.bitbucket_pipeline_uuid}/steps/{self.bitbucket_step_uuid}/test-report",
+            build_report_data(len(failures)),
+            self.bitbucket_workspace,
+            self.bitbucket_repo_slug,
+            self.bitbucket_commit
+        )
 
         for failure in failures:
-            self.log_info(f"Submitting failure: {failure}")
+            self.log_debug(f"Submitting failure: {failure}")
             bitbucket_api.create_annotation(
                 failure["title"],
                 failure["summary"],
@@ -239,8 +228,7 @@ class PHPCodeStandards(Pipe):
                 self.bitbucket_workspace,
                 self.bitbucket_repo_slug,
                 self.bitbucket_commit
-                )
-        
+            )
 
     def run(self):
         super().run()
@@ -256,8 +244,6 @@ class PHPCodeStandards(Pipe):
         else:
             self.success(message=f"Passed code standards test")
 
-
-
 if __name__ == '__main__':
-    pipe= PHPCodeStandards(schema=schema, logger=logger)
+    pipe = PHPCodeStandards(schema=schema, logger=logger)
     pipe.run()
