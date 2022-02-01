@@ -106,9 +106,6 @@ class PHPCodeStandards(Pipe):
 
         # Filter empty stirngs
         changed_files = list(filter(None, changed_files))
-        # Covert paths to relative equivalent
-        workspace_path = "/opt/atlassian/pipelines/agent/build/"
-        changed_files = list(map(lambda x: x.replace(workspace_path, ''), changed_files))
 
         self.log_info(f"Comparing HEAD against merge base {merge_base}")
         if self.exclude_expression:
@@ -165,8 +162,11 @@ class PHPCodeStandards(Pipe):
                 if suite.failures == 0: continue
                 for case in suite:
                     for result in case.result:
+                        # Covert paths to relative equivalent
+                        workspace_path = "/opt/atlassian/pipelines/agent/build/"
+                        path = suite.name.replace(workspace_path, '')
                         results.append({
-                            "path": suite.name,
+                            "path": path,
                             "title": case.name,
                             "summary": result.message,
                             "line": re.search("\((\d*):.*\)", case.name).group(1) 
