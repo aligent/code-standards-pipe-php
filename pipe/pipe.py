@@ -28,7 +28,7 @@ class PHPCodeStandards(Pipe):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.magento_user = self.get_variable('MAGENTO_USER')
-        self.magento_password = self.get_variable('MAGENTO_PASSWORD')
+        self.magento_password = self.get_variable('MAGENTO_PASS')
         self.skip_dependencies = True if self.get_variable(
             'SKIP_DEPENDENCIES') else False
         self.standards = f"Security,{self.get_variable('STANDARDS')}" if self.get_variable(
