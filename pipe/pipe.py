@@ -65,7 +65,7 @@ class PHPCodeStandards(Pipe):
         with open(f"{ssh_dir}config", 'a') as config_file:
             config_file.write("IdentityFile ~/.ssh/pipelines_id")
 
-        subprocess.run(["chmod", "-R", "go-rwx", "~/.ssh/"], check=True)
+        subprocess.run(["chmod", "-R", "go-rwx", ssh_dir], check=True)
 
     def inject_composer_credentials(self):
         if not self.magento_user or not self.magento_password:
