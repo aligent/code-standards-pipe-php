@@ -75,7 +75,7 @@ class PHPCodeStandards(Pipe):
         self.log_debug("Injecting Magento Composer credentials into auth.json")
 
         composer_auth_update_command = [
-            "jq", "'.\"http-basic\".\"repo.magento.com\".username = env.MAGENTO_USER | .\"http-basic\".\"repo.magento.com\".password = env.MAGENTO_PASS | del(.\"github-oauth\")'", "auth.json.sample", ">", "auth.json"]
+            "jq", f"'.\"http-basic\".\"repo.magento.com\".username = {self.magento_user} | .\"http-basic\".\"repo.magento.com\".password = {self.magento_password} | del(.\"github-oauth\")'", "auth.json.sample", ">", "auth.json"]
 
         composer_auth_update = subprocess.run(composer_auth_update_command)
         composer_auth_update.check_returncode()
