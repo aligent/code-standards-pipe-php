@@ -76,7 +76,7 @@ class PHPCodeStandards(Pipe):
         self.log_debug(f"User {self.magento_user}")
 
         composer_auth_update_command = [
-            "jq", f"'.\"http-basic\".\"repo.magento.com\".username = \"{self.magento_user}\" | .\"http-basic\".\"repo.magento.com\".password = \"{self.magento_password}\" | del(.\"github-oauth\")'", "auth.json.sample", ">", "auth.json"]
+            "jq", f".\"http-basic\".\"repo.magento.com\".username = \"{self.magento_user}\" | .\"http-basic\".\"repo.magento.com\".password = \"{self.magento_password}\" | del(.\"github-oauth\")", "auth.json.sample", ">", "auth.json"]
 
         composer_auth_update = subprocess.run(composer_auth_update_command)
         composer_auth_update.check_returncode()
