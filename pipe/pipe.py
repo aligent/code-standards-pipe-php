@@ -28,7 +28,7 @@ class PHPCodeStandards(Pipe):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.magento_user = self.get_variable('MAGENTO_USER')
-        self.magento_password = self.get_variable('MAGENTO_PASSWORD')
+        self.magento_password = self.get_variable('MAGENTO_PASS')
         self.skip_dependencies = True if self.get_variable(
             'SKIP_DEPENDENCIES') else False
         self.standards = f"Security,{self.get_variable('STANDARDS')}" if self.get_variable(
@@ -65,7 +65,7 @@ class PHPCodeStandards(Pipe):
         with open(f"{ssh_dir}config", 'a') as config_file:
             config_file.write("IdentityFile ~/.ssh/pipelines_id")
 
-        subprocess.run(["chmod", "-R", "go-rwx", "~/.ssh/"], check=True)
+        subprocess.run(["chmod", "-R", "go-rwx", ssh_dir], check=True)
 
     def inject_composer_credentials(self):
         if not self.magento_user or not self.magento_password:
@@ -73,12 +73,13 @@ class PHPCodeStandards(Pipe):
           return
 
         self.log_debug("Injecting Magento Composer credentials into auth.json")
+        self.log_debug(f"User {self.magento_user}")
 
         composer_auth_update_command = [
-            "jq", "'.\"http-basic\".\"repo.magento.com\".username = env.MAGENTO_USER | .\"http-basic\".\"repo.magento.com\".password = env.MAGENTO_PASS | del(.\"github-oauth\")'", "auth.json.sample", ">", "auth.json"]
+            "jq", f".\"http-basic\".\"repo.magento.com\".username = \"{self.magento_user}\" | .\"http-basic\".\"repo.magento.com\".password = \"{self.magento_password}\" | del(.\"github-oauth\")", "auth.json.sample"]
 
-        composer_auth_update = subprocess.run(composer_auth_update_command)
-        composer_auth_update.check_returncode()
+        with open(f"auth.json", 'w') as auth:
+             subprocess.check_call(composer_auth_update_command, stdout=auth)
 
     def run_code_standards_check(self):
         target_branch = "origin/main"
