@@ -29,6 +29,10 @@ Add the following your `bitbucket-pipelines.yml` file:
 | MAGENTO_PASS          | (Optional) Injects repo.magento.com password into auth.json|
 | EXCLUDE_EXPRESSION    | (Optional) A grep [regular expression](https://www.gnu.org/software/grep/manual/html_node/Basic-vs-Extended.html) to exclude files from standards testing|
 
+## Local use
+An intermediate build target `standards-runtime` is available which does not include the Bitbucket specific pip aspects. This essentially just provides a runtime for PHPCS which can be used by CLI tools and IDE integrations.
+
+
 ## Development
 
 The following command can be used to invoke the pipe locally:
