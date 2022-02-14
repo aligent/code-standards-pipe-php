@@ -1,2 +1,6 @@
 #!/bin/bash
-docker build --build-arg PHP_VERSION="$(echo $DOCKER_TAG | sed 's/-experimental//g')" -f $DOCKERFILE_PATH -t $IMAGE_NAME .
+if [[ "$DOCKER_TAG" == *"runtime"* ]]; then
+     docker build --target standards-runtime --build-arg PHP_VERSION="$(echo $DOCKER_TAG | sed 's/-experimental//g' | sed 's/-runtime//g')" -f $DOCKERFILE_PATH -t $IMAGE_NAME .
+else
+     docker build --build-arg PHP_VERSION="$(echo $DOCKER_TAG | sed 's/-experimental//g')" -f $DOCKERFILE_PATH -t $IMAGE_NAME .
+fi
