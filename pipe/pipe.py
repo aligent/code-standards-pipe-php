@@ -121,6 +121,9 @@ class PHPCodeStandards(Pipe):
 
             changed_files = list(filter(filter_paths, changed_files))
 
+        else:
+            self.log_info(f"Exclude expression not provided. All changed files will be scanned.")
+
         if not changed_files:
             self.success("No changed files to scan")
             self.standards_failure = False
