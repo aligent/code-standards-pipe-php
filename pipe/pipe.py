@@ -115,7 +115,9 @@ class PHPCodeStandards(Pipe):
                 match = re.search(self.exclude_expression, path)
                 if match:
                     self.log_info(f"Excluding: {path}")
-                return False if match else True
+                else:
+                    self.log_info(f"Testing: {path}")
+                return not match
 
             changed_files = list(filter(filter_paths, changed_files))
 
