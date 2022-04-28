@@ -18,13 +18,32 @@ Add the following your `bitbucket-pipelines.yml` file:
                 MAGENTO_USER: "USER"
                 MAGENTO_PASS: "PASS"
 ```
+
+### Github Actions
+This pipe has partial support for Github actions. Please ensure that `SKIP_DEPENDENCIES` = `true`.
+
+```yaml
+  code-standards:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Code Standards Test
+        uses: docker://aligent/code-standards-pipe-php:7.4-experimental
+        env:
+          STANDARDS: "Magento2"
+          SKIP_DEPENDENCIES: "true"
+```
+
 ## Variables
 
 | Variable              | Usage                                                       |
 | --------------------- | ----------------------------------------------------------- |
 | STANDARDS             | The PHPCS standards to run (Security checks will always be run) |
 | DEBUG                 | (Optional) Turn on extra debug information. Default: `false`. |
-| SKIP_DEPENDENCIES     | (Optional) Skip installing project composer dependencies. Default: `false`. |
+| SKIP_DEPENDENCIES     | (Optional) Skip installing project composer dependencies. Default: `false`. For Github actions this should be set to `true`. |
 | MAGENTO_USER          | (Optional) Injects repo.magento.com user into auth.json |
 | MAGENTO_PASS          | (Optional) Injects repo.magento.com password into auth.json|
 | EXCLUDE_EXPRESSION    | (Optional) A grep [regular expression](https://www.gnu.org/software/grep/manual/html_node/Basic-vs-Extended.html) to exclude files from standards testing|
