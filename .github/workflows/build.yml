@@ -1,0 +1,9 @@
+name: Build
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - run: docker build . --build-arg PHP_VERSION=8
