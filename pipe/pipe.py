@@ -39,6 +39,7 @@ class PHPCodeStandards(Pipe):
         self.bitbucket_pipeline_uuid = os.getenv('BITBUCKET_PIPELINE_UUID')
         self.bitbucket_step_uuid = os.getenv('BITBUCKET_STEP_UUID')
         self.bitbucket_commit = os.getenv('BITBUCKET_COMMIT')
+        self.github_actions = os.getenv('GITHUB_ACTIONS')
 
     def setup_ssh_credentials(self):
         ssh_dir = os.path.expanduser("~/.ssh/")
@@ -115,9 +116,14 @@ class PHPCodeStandards(Pipe):
                 match = re.search(self.exclude_expression, path)
                 if match:
                     self.log_info(f"Excluding: {path}")
-                return False if match else True
+                else:
+                    self.log_info(f"Testing: {path}")
+                return not match
 
             changed_files = list(filter(filter_paths, changed_files))
+
+        else:
+            self.log_info(f"Exclude expression not provided. All changed files will be scanned.")
 
         if not changed_files:
             self.success("No changed files to scan")
@@ -231,11 +237,15 @@ class PHPCodeStandards(Pipe):
     def run(self):
         super().run()
         if not self.skip_dependencies:
+            if self.github_actions:
+                self.fail(message=f"Dependency installation not suppoted on Github.\nPlease use SKIP_DEPENDENCIES=true.")
             self.setup_ssh_credentials()
             self.inject_composer_credentials()
             self.composer_install()
         self.run_code_standards_check()
-        self.upload_report()
+
+        if not self.github_actions:
+            self.upload_report()
 
         if self.standards_failure:
             self.fail(message=f"Failed code standards test")
