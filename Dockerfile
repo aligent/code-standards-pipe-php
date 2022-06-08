@@ -1,5 +1,5 @@
 ARG PHP_VERSION
-FROM php:${PHP_VERSION} as standards-runtime
+FROM php:8.1 as standards-runtime
 
 RUN apt-get update
 RUN apt-get install -y unzip libpng-dev libicu-dev libxslt-dev jq git libzip-dev wget
