@@ -12,6 +12,7 @@ RUN docker-php-ext-install gd bcmath zip intl xsl pdo_mysql soap sockets
 RUN mkdir /composer
 COPY composer.json /composer
 RUN cd /composer && composer install
+RUN /composer/vendor/bin/phpcs --config-set installed_paths /composer/vendor/magento/magento-coding-standard/,/composer/vendor/pheromone/phpcs-security-audit/,/composer/vendor/phpcompatibility/php-compatibility
 
 FROM standards-runtime
 
