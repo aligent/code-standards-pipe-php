@@ -4,7 +4,7 @@
     "description": "Composer requirements for Alignet code standards checks",
     "type": "magento2-module",
     "require": {
-        "magento/magento-coding-standard": "^23",
+        "magento/magento-coding-standard": "^22",
         "pheromone/phpcs-security-audit": "^2.0",
         "squizlabs/php_codesniffer": "^3.5",
         "phpcompatibility/php-compatibility": "^9.3"
@@ -14,10 +14,10 @@
     ],
     "scripts": {
         "post-install-cmd": [
-            "([ $COMPOSER_DEV_MODE -eq 0 ] || vendor/bin/phpcs --config-set installed_paths ../../magento/magento-coding-standard/,../../pheromone/phpcs-security-audit/,../../phpcompatibility/php-compatibility)"
+            "([ $COMPOSER_DEV_MODE -eq 0 ] || /composer/vendor/bin/phpcs --config-set installed_paths /composer/vendor/magento/magento-coding-standard/,/composer/vendor/pheromone/phpcs-security-audit/,/composer/vendor/phpcompatibility/php-compatibility)"
         ],
         "post-update-cmd": [
-            "([ $COMPOSER_DEV_MODE -eq 0 ] || vendor/bin/phpcs --config-set installed_paths ../../magento/magento-coding-standard/,../../pheromone/phpcs-security-audit/,../../phpcompatibility/php-compatibility)"
+            "([ $COMPOSER_DEV_MODE -eq 0 ] || /composer/vendor/bin/phpcs --config-set installed_paths /composer/vendor/magento/magento-coding-standard/,/composer/vendor/pheromone/phpcs-security-audit/,/composer/vendor/phpcompatibility/php-compatibility)"
         ],
         "check-style": "./vendor/bin/phpcs --standard=Magento2 --colors --report=summary app"
     }
