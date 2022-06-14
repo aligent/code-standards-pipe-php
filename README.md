@@ -20,9 +20,17 @@ Add the following your `bitbucket-pipelines.yml` file:
 ```
 
 ### Github Actions
-This pipe has partial support for Github actions. Please ensure that `SKIP_DEPENDENCIES` = `true`.
+This pipe has partial support for Github actions. Please ensure that `SKIP_DEPENDENCIES` = `true`, and that the PHP version
+is correct for your project.
+
+Create the following file as `.github/workflows/phpcs.yml`.
 
 ```yaml
+name: Run PHP Code Style
+
+on: pull_request
+  
+jobs:
   code-standards:
     runs-on: ubuntu-latest
     steps:
@@ -31,7 +39,7 @@ This pipe has partial support for Github actions. Please ensure that `SKIP_DEPEN
         with:
           fetch-depth: 0
       - name: Code Standards Test
-        uses: docker://aligent/code-standards-pipe-php:7.4-experimental
+        uses: docker://aligent/code-standards-pipe-php:8.1
         env:
           STANDARDS: "Magento2"
           SKIP_DEPENDENCIES: "true"
