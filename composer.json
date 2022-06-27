@@ -4,7 +4,7 @@
     "description": "Composer requirements for Alignet code standards checks",
     "type": "magento2-module",
     "require": {
-        "magento/magento-coding-standard": "^24",
+        "magento/magento-coding-standard": "^25",
         "pheromone/phpcs-security-audit": "^2.0",
         "squizlabs/php_codesniffer": "^3.5",
         "phpcompatibility/php-compatibility": "^9.3"
