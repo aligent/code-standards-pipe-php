@@ -5,7 +5,7 @@ RUN apt-get update
 RUN apt-get install -y unzip libpng-dev libicu-dev libxslt-dev jq git libzip-dev wget
 RUN apt-get clean
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN curl https://getcomposer.org/download/2.2.18/composer.phar -o /usr/local/bin/composer && chmod +x /usr/local/bin/composer
 
 RUN docker-php-ext-install gd bcmath zip intl xsl pdo_mysql soap sockets
 
