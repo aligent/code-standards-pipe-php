@@ -5,8 +5,11 @@ on: [pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [7.4, 8.0, 8.1, 8.2]
     steps:
-    - uses: actions/checkout@v2
-      with:
-        ref: ${{ github.event.release.target_commitish }}
-    - run: docker build . --build-arg PHP_VERSION=8
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.release.target_commitish }}
+      - run: docker build . --build-arg PHP_VERSION=${{ matrix.version }}
