@@ -24,4 +24,9 @@ RUN chmod a+x /pipe.py
 COPY requirements.txt /
 RUN python3 -m pip install --no-cache-dir -r /requirements.txt
 
+# Allow git access to mounted build directories
+RUN git config --global --add safe.directory /build
+RUN mkdir -p /opt/atlassian/pipelines/agent/build
+RUN git config --global --add safe.directory /opt/atlassian/pipelines/agent/build
+
 ENTRYPOINT ["/pipe.py"]
