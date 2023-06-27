@@ -2,7 +2,7 @@ ARG PHP_VERSION
 FROM php:${PHP_VERSION} as standards-runtime
 
 RUN apt-get update
-RUN apt-get install -y unzip libpng-dev libicu-dev libxslt-dev jq git libzip-dev wget python3.11-venv
+RUN apt-get install -y unzip libpng-dev libicu-dev libxslt-dev jq git libzip-dev wget python3-venv
 RUN apt-get clean
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
