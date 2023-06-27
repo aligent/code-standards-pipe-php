@@ -2,7 +2,7 @@ ARG PHP_VERSION
 FROM php:${PHP_VERSION} as standards-runtime
 
 RUN apt-get update
-RUN apt-get install -y unzip libpng-dev libicu-dev libxslt-dev jq git libzip-dev wget
+RUN apt-get install -y unzip libpng-dev libicu-dev libxslt-dev jq git libzip-dev wget python3.11-venv
 RUN apt-get clean
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -22,7 +22,8 @@ RUN apt-get clean
 COPY pipe /
 RUN chmod a+x /pipe.py
 COPY requirements.txt /
-RUN python3 -m pip install --no-cache-dir -r /requirements.txt
+RUN python3 -m venv /venv
+RUN /venv/bin/pip install --no-cache-dir -r /requirements.txt
 
 # Allow git access to mounted build directories
 RUN git config --global --add safe.directory /build
