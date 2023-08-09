@@ -35,8 +35,8 @@ class PHPCodeStandards(Pipe):
         self.exclude_expression = self.get_variable('EXCLUDE_EXPRESSION')
         self.bitbucket_workspace = os.getenv('BITBUCKET_WORKSPACE')
         self.bitbucket_repo_slug = os.getenv('BITBUCKET_REPO_SLUG')
-        self.bitbucket_pipeline_uuid = os.getenv('BITBUCKET_PIPELINE_UUID')
-        self.bitbucket_step_uuid = os.getenv('BITBUCKET_STEP_UUID')
+        self.bitbucket_pipeline_uuid = os.getenv('BITBUCKET_PIPELINE_UUID').strip("{}")
+        self.bitbucket_step_uuid = os.getenv('BITBUCKET_STEP_UUID').strip("{}")
         self.bitbucket_commit = os.getenv('BITBUCKET_COMMIT')
         self.github_actions = os.getenv('GITHUB_ACTIONS')
 
@@ -196,7 +196,9 @@ class PHPCodeStandards(Pipe):
         report_id = str(uuid.uuid4())
 
         bitbucket_api = Bitbucket(
-            proxies={"http": 'http://host.docker.internal:29418'})
+            proxies={"http": 'http://host.docker.internal:29418'},
+            protocol="http"
+        )
 
         failures = []
         if os.path.exists("test-results/phpcs.xml"):
