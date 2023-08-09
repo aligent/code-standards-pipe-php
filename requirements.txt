@@ -1,3 +1,3 @@
 junitparser
-git+https://github.com/aligent/bitbucket-manager
+git+https://github.com/aligent/bitbucket-manager@hotfix/Optional-Protocol
 bitbucket-pipes-toolkit==3.2.1
