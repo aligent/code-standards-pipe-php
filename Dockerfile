@@ -26,7 +26,10 @@ RUN python3 -m venv /venv
 RUN /venv/bin/pip install --no-cache-dir -r /requirements.txt
 
 # Allow git access to mounted build directories
-RUN git config --global --add safe.directory '*'
+RUN git config --global --add safe.directory /build
 RUN mkdir -p /opt/atlassian/pipelines/agent/build
+RUN git config --global --add safe.directory /opt/atlassian/pipelines/agent/build
+RUN mkdir -p /github/workspace
+RUN git config --global --add safe.directory /github/workspace
 
 ENTRYPOINT ["/pipe.py"]
