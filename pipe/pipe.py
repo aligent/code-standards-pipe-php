@@ -30,8 +30,6 @@ class PHPCodeStandards(Pipe):
         self.magento_password = self.get_variable('MAGENTO_PASS')
         self.skip_dependencies = True if self.get_variable(
             'SKIP_DEPENDENCIES') else False
-        self.standards = f"Security,{self.get_variable('STANDARDS')}" if self.get_variable(
-            'STANDARDS') else 'Security'
         self.exclude_expression = self.get_variable('EXCLUDE_EXPRESSION')
         self.bitbucket_workspace = os.getenv('BITBUCKET_WORKSPACE')
         self.bitbucket_repo_slug = os.getenv('BITBUCKET_REPO_SLUG')
@@ -39,6 +37,9 @@ class PHPCodeStandards(Pipe):
         self.bitbucket_step_uuid = os.getenv('BITBUCKET_STEP_UUID')
         self.bitbucket_commit = os.getenv('BITBUCKET_COMMIT')
         self.github_actions = os.getenv('GITHUB_ACTIONS')
+        self.standards = self.get_variable('STANDARDS')
+        if not self.standards:
+          raise ValueError("A standard must be supplied | Exiting...")
 
     def setup_ssh_credentials(self):
         ssh_dir = os.path.expanduser("~/.ssh/")
@@ -204,7 +205,7 @@ class PHPCodeStandards(Pipe):
 
         bitbucket_api.create_report(
             "Code standards report",
-            "Results producced by runing PHPCS against updated files",
+            "Results produced by runing PHPCS against updated files",
             "SECURITY",
             report_id,
             "code-standards-pipe-php",
