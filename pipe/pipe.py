@@ -134,6 +134,8 @@ class PHPCodeStandards(Pipe):
             os.mkdir("test-results")
 
         phpcs_command = ["/composer/vendor/bin/phpcs",
+                         "-d",
+                         "memory_limit=512M",
                          "--report=junit",
                          f"--standard={self.standards}"
                          ] + changed_files

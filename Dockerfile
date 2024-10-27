@@ -11,7 +11,9 @@ RUN docker-php-ext-install gd bcmath zip intl xsl pdo_mysql soap sockets
 
 RUN mkdir /composer
 COPY composer.json /composer
-RUN cd /composer && composer install
+RUN cd /composer && \
+    composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true && \
+    composer install
 
 FROM standards-runtime
 
