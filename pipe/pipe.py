@@ -207,7 +207,17 @@ class PHPCodeStandards(Pipe):
 
         failures = []
         if os.path.exists("test-results/phpcs.xml"):
-            failures = read_failures_from_file(f"test-results/phpcs.xml")
+            try:
+                failures = read_failures_from_file(f"test-results/phpcs.xml")
+            except Exception as e:
+                self.log_error(f"Failed to parse phpcs.xml: {e}") # log error
+                try:
+                    with open("test-results/phpcs.xml", 'r') as f:
+                        content = f.read()
+                        self.log_debug(f"phpcs.xml content (first 500 chars): {content[:500]}") # show start of file
+                except:
+                    pass
+                raise e
 
         bitbucket_api.create_report(
             "Code standards report",
