@@ -144,7 +144,7 @@ class PHPCodeStandards(Pipe):
                                stderr=subprocess.PIPE, universal_newlines=True)
         self.standards_failure = False if phpcs.returncode == 0 else True
 
-        phpcs_output = phpcs.stdout
+        phpcs_output = phpcs.stdout.strip()
 
         if phpcs_output:
             with open("test-results/phpcs.xml", 'a') as output_file:
@@ -173,13 +173,17 @@ class PHPCodeStandards(Pipe):
                         # Covert paths to relative equivalent
                         workspace_path = "/opt/atlassian/pipelines/agent/build/"
                         path = suite.name.replace(workspace_path, '')
+                        
+                        # Extract line number from name if present
+                        # Example: /some/path/to/file (10:11)
+                        line_match = re.search(r"\((\d*):.*\)", case.name)
+                        line = line_match.group(1) if line_match else "1"
+                        
                         results.append({
                             "path": path,
                             "title": case.name,
                             "summary": result.message,
-                            # Extract line number from name
-                            # Example: /some/path/to/file (10:11)
-                            "line": re.search("\((\d*):.*\)", case.name).group(1)
+                            "line": line
                         })
 
             return results
