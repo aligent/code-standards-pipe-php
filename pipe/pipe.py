@@ -137,18 +137,13 @@ class PHPCodeStandards(Pipe):
                          "-d",
                          "memory_limit=512M",
                          "--report=junit",
+                         "--report-file=test-results/phpcs.xml"
                          f"--standard={self.standards}"
                          ] + changed_files
 
         phpcs = subprocess.run(phpcs_command, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, universal_newlines=True)
         self.standards_failure = False if phpcs.returncode == 0 else True
-
-        phpcs_output = phpcs.stdout.strip()
-
-        if phpcs_output:
-            with open("test-results/phpcs.xml", 'a') as output_file:
-                output_file.write(phpcs_output)
 
     def composer_install(self):
         composer_install_command = ["composer", "install", "--dev"]
