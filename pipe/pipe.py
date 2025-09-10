@@ -137,7 +137,7 @@ class PHPCodeStandards(Pipe):
                          "-d",
                          "memory_limit=512M",
                          "--report=junit",
-                         "--report-file=test-results/phpcs.xml"
+                         "--report-file=test-results/phpcs.xml",
                          f"--standard={self.standards}"
                          ] + changed_files
 
