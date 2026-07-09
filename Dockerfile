@@ -31,7 +31,9 @@ RUN apk update && apk add --no-cache \
     autoconf \
     g++ \
     make \
-    linux-headers
+    linux-headers \
+    # Upgrade all packages to pick up security fixes not yet in base image
+    && apk upgrade --no-cache
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -45,6 +47,12 @@ COPY composer.json /composer
 RUN cd /composer && \
     composer config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true && \
     composer install
+
+# Remove unused npm package files from magento-coding-standard.
+# These are for JavaScript linting (eslint) which this pipe doesn't use.
+# Leaving them triggers false positive security alerts (e.g. GHSA-673x-qfjx-j475)
+# since the package-lock.json references vulnerable npm packages that are never installed.
+RUN rm -f /composer/vendor/magento/magento-coding-standard/package*.json
 
 FROM standards-runtime
 
