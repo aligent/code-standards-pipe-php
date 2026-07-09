@@ -1,7 +1,12 @@
 ARG PHP_VERSION
 ARG ALPINE_VERSION
-ARG ALPINE_VERSION_REQUIRED=${ALPINE_VERSION:?ALPINE_VERSION build argument is required}
-FROM php:${PHP_VERSION}-alpine${ALPINE_VERSION} as standards-runtime
+
+FROM busybox:latest AS validator
+ARG ALPINE_VERSION
+RUN : "${ALPINE_VERSION:?ALPINE_VERSION build argument is required}" && touch /validated
+
+FROM php:${PHP_VERSION}-alpine${ALPINE_VERSION} AS standards-runtime
+COPY --from=validator /validated /tmp/.validated
 
 # Install system dependencies
 RUN apk update && apk add --no-cache \
