@@ -1,5 +1,7 @@
 ARG PHP_VERSION
-FROM php:${PHP_VERSION}-alpine3.21 as standards-runtime
+ARG ALPINE_VERSION
+ARG ALPINE_VERSION_REQUIRED=${ALPINE_VERSION:?ALPINE_VERSION build argument is required}
+FROM php:${PHP_VERSION}-alpine${ALPINE_VERSION} as standards-runtime
 
 # Install system dependencies
 RUN apk update && apk add --no-cache \
