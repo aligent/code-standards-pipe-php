@@ -11,7 +11,7 @@ Add the following your `bitbucket-pipelines.yml` file:
       - step:
           name: "Code Standards check"
           script:
-            - pipe: docker://aligent/code-standards-pipe-php:8.2
+            - pipe: docker://ghcr.io/aligent/code-standards-pipe-php:8.4
               variables:
                 STANDARDS: "Magento2"
                 SKIP_DEPENDENCIES: "true"
@@ -39,7 +39,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Code Standards Test
-        uses: docker://aligent/code-standards-pipe-php:8.1
+        uses: docker://ghcr.io/aligent/code-standards-pipe-php:8.4
         env:
           STANDARDS: "Magento2"
           SKIP_DEPENDENCIES: "true"
@@ -64,8 +64,21 @@ An intermediate build target `standards-runtime` is available which does not inc
 
 The following command can be used to invoke the pipe locally:
 ```
-docker run -v $PWD:/build --workdir=/build aligent/code-standards-pipe-php:<PHP_VERSION>
+docker run -v $PWD:/build --workdir=/build ghcr.io/aligent/code-standards-pipe-php:<PHP_VERSION>
 ```
 
-Commits published to the `main` branch  will trigger an automated build for the each of the configured PHP version.
-Commits to `staging` will do the same but image tags will be suffixed with `-experimiental`.
+## CI/CD
+
+Docker images are built and pushed to GitHub Container Registry (`ghcr.io/aligent/code-standards-pipe-php`) via GitHub Actions
+(`.github/workflows/docker-build.yml`, using the shared `aligent/workflows` Docker build workflow). The workflow:
+
+- Builds every configured PHP version, as both the full pipe image (`<PHP_VERSION>`) and the `standards-runtime` target (`<PHP_VERSION>-runtime`)
+- Pushes images on commits to `main`; commits to `staging` push tags suffixed with `-experimental`
+- Builds without pushing on pull requests
+- Can be triggered manually
+
+### Required Variables
+
+| Variable | Description |
+|----------|-------------|
+| `ALPINE_VERSION` | Alpine version of the upstream `php:<PHP_VERSION>-alpine<ALPINE_VERSION>` image. The build fails if it is not set. |
