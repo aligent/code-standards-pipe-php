@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['8.3', '8.4']
+        php-version: ['8.1', '8.2', '8.3', '8.4']
         image:
           # Full pipe image (last Dockerfile stage)
           - target: ''
@@ -38,7 +38,6 @@ jobs:
       push: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging' }}
       build-args: |
         PHP_VERSION=${{ matrix.php-version }}
-        ALPINE_VERSION=${{ vars.ALPINE_VERSION }}
       # Tags: 8.4, 8.4-runtime (main); 8.4-experimental, 8.4-runtime-experimental (staging)
       tags: |
         type=raw,value=${{ matrix.php-version }}${{ matrix.image.suffix }}${{ github.ref_name == 'staging' && '-experimental' || '' }}
