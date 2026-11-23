@@ -47,7 +47,8 @@ RUN cd /composer && \
 # These are for JavaScript linting (eslint) which this pipe doesn't use.
 # Leaving them triggers false positive security alerts (e.g. GHSA-673x-qfjx-j475)
 # since the package-lock.json references vulnerable npm packages that are never installed.
-RUN rm -f /composer/vendor/magento/magento-coding-standard/package*.json
+RUN rm -f /composer/vendor/magento/magento-coding-standard/package*.json \
+          /composer/vendor/magento/magento-coding-standard/eslint/package*.json
 
 FROM standards-runtime
 
